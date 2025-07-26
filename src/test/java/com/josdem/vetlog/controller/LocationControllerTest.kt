@@ -23,11 +23,13 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
 import java.util.concurrent.ConcurrentHashMap
 
 @WebMvcTest(LocationController::class)
+@TestPropertySource(properties = ["geoToken=testToken"])
 class LocationControllerTest {
 
     @Autowired
@@ -40,19 +42,15 @@ class LocationControllerTest {
 
     @Test
     fun `should store location for given pet IDs`() {
-        // Arrange
-        val testToken = "test-token"
         val request = mapOf(
             "latitude" to 35.6895,
             "longitude" to 139.6917,
             "petIds" to listOf(1L, 2L, 3L)
         )
 
-        System.setProperty("geoToken", testToken)
-
         mockMvc.post("/geolocation/storeLocation") {
             contentType = MediaType.APPLICATION_JSON
-            header("token", testToken)
+            header("token", "testToken")
             content = objectMapper.writeValueAsString(request)
         }.andExpect {
             status { isOk() }
