@@ -29,8 +29,14 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testImplementation("org.springframework.boot:spring-boot-starter-test") {
+		exclude(group = "org.junit.vintage")
+	}
 }
 
 tasks.withType<Test> {
+	useJUnitPlatform()
+}
+tasks.test {
 	useJUnitPlatform()
 }
