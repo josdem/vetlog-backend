@@ -16,12 +16,6 @@
 
 package com.josdem.vetlog.command;
 
-import lombok.Data;
-import java.util.List;
+import java.io.Serializable;
 
-@Data
-public class LocationRequest {
-    public double lat;
-    public double lng;
-    public List<Long> petIds;
-}
+public interface Command extends Serializable {}
