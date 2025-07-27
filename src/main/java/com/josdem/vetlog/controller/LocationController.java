@@ -66,8 +66,8 @@ public class LocationController {
 
         log.info("Storing geolocation for pets: {}", locationRequestCommand);
 
-        Location location = new Location(locationRequestCommand.getLatitude(), locationRequestCommand.getLongitude());
-        locationRequestCommand.getPetIds().forEach(petId -> locationRepository.save(petId, location));
+        Location location = new Location(locationRequestCommand.latitude(), locationRequestCommand.longitude());
+        locationRequestCommand.petIds().forEach(petId -> locationRepository.save(petId, location));
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body("Location stored successfully");
