@@ -25,12 +25,19 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation ("jakarta.validation:jakarta.validation-api:3.0.2")
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testImplementation("org.springframework.boot:spring-boot-starter-test") {
+		exclude(group = "org.junit.vintage")
+	}
 }
 
 tasks.withType<Test> {
+	useJUnitPlatform()
+}
+tasks.test {
 	useJUnitPlatform()
 }
