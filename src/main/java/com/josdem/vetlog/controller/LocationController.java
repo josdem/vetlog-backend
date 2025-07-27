@@ -16,7 +16,9 @@
 
 package com.josdem.vetlog.controller;
 
+import com.josdem.vetlog.dto.ErrorDto;
 import com.josdem.vetlog.model.Location;
+import com.josdem.vetlog.repository.LocationRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.Getter;
