@@ -33,7 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping("/geolocation")
 public class LocationController {
 
-    public static final String DOMAIN = "vetlog.org";
+    @Value("${app.domain}")
+    private String domain;
 
     @Value("${geoToken}")
     private String geoToken;
