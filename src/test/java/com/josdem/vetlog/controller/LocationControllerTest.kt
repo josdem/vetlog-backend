@@ -138,7 +138,7 @@ class LocationControllerTest {
 
         mockMvc.post("/geolocation/storeLocation") {
             contentType = MediaType.APPLICATION_JSON
-            header("token", "invalidToken") // 無効なトークン
+            header("token", "invalidToken")
             content = objectMapper.writeValueAsString(request)
         }.andExpect {
             status { HttpStatus.FORBIDDEN }
