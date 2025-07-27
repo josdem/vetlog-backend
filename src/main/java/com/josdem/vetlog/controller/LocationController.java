@@ -18,15 +18,13 @@ package com.josdem.vetlog.controller;
 
 import com.josdem.vetlog.model.Location;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import com.josdem.vetlog.command.LocationRequest;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -57,18 +55,11 @@ public class LocationController {
 
         log.info("Storing geolocation for pets: {}", locationRequest);
 
-        Location location = new Location(locationRequest.lat, locationRequest.lng);
-        locationRequest.petIds.forEach(petId -> {
+        Location location = new Location(locationRequest.getLat(), locationRequest.getLng());
+        locationRequest.getPetIds().forEach(petId -> {
             petLocations.put(petId, location);
         });
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
-    }
-
-    @Data
-    public static class LocationRequest {
-        private double lat;
-        private double lng;
-        private List<Long> petIds;
     }
 }
