@@ -27,10 +27,10 @@ import java.util.List;
 public class LocationRequestCommand implements Command {
 
     @NotNull
-    private double lat;
+    private Double latitude;
 
     @NotNull
-    private double lng;
+    private Double longitude;
 
     @NotNull
     @Valid

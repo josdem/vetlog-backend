@@ -22,6 +22,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Location {
-    private double lat;
-    private double lng;
+    private double latitude;
+    private double longitude;
 }
