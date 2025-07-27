@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LocationController {
 
     @Value("${app.domain}")
-    private String domain;
+    private String DOMAIN;
 
     @Value("${geoToken}")
     private String geoToken;
