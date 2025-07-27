@@ -16,15 +16,23 @@
 
 package com.josdem.vetlog.command;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import java.util.List;
 
 @Data
 public class LocationRequestCommand implements Command {
 
+    @NotNull
     private double lat;
+
+    @NotNull
     private double lng;
 
+    @NotNull
+    @Valid
     private List<@Min(1) Long> petIds;
 }
