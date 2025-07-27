@@ -18,13 +18,14 @@ package com.josdem.vetlog.controller;
 
 import com.josdem.vetlog.model.Location;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.josdem.vetlog.command.LocationRequest;
+import com.josdem.vetlog.command.LocationRequestCommand;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -43,7 +44,7 @@ public class LocationController {
     @PostMapping("/storeLocation")
     public ResponseEntity<String> storeLocation(
             @RequestHeader("token") String token,
-            @RequestBody LocationRequest locationRequest,
+            @Valid @RequestBody LocationRequestCommand locationRequestCommand,
             HttpServletResponse response) {
 
         response.addHeader("Access-Control-Allow-Methods", "POST");
@@ -53,10 +54,10 @@ public class LocationController {
             return new ResponseEntity<>("FORBIDDEN", HttpStatus.FORBIDDEN);
         }
 
-        log.info("Storing geolocation for pets: {}", locationRequest);
+        log.info("Storing geolocation for pets: {}", locationRequestCommand);
 
-        Location location = new Location(locationRequest.getLat(), locationRequest.getLng());
-        locationRequest.getPetIds().forEach(petId -> {
+        Location location = new Location(locationRequestCommand.getLat(), locationRequestCommand.getLng());
+        locationRequestCommand.getPetIds().forEach(petId -> {
             petLocations.put(petId, location);
         });
 

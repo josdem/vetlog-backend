@@ -21,7 +21,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class LocationRequest implements Command {
+public class LocationRequestCommand implements Command {
 
     private double lat;
     private double lng;
