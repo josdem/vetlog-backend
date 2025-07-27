@@ -20,19 +20,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+
 import java.util.List;
 
-@Data
-public class LocationRequestCommand implements Command {
-
-    @NotNull
-    private Double latitude;
-
-    @NotNull
-    private Double longitude;
-
-    @NotNull
-    @Valid
-    private List<@Min(1) Long> petIds;
+public record LocationRequestCommand(@NotNull Double latitude, @NotNull Double longitude,
+                                     @NotNull @Valid List<@Min(1) Long> petIds) implements Command {
 }
