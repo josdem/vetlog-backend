@@ -34,34 +34,40 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LocationController {
 
     @Value("${app.domain}")
-    private String DOMAIN;
+    private String domain;
 
     @Value("${geoToken}")
     private String geoToken;
 
-    @Getter
-    private final ConcurrentHashMap<Long, Location> petLocations = new ConcurrentHashMap<>();
+    private final LocationRepository locationRepository;
+
+    public LocationController(LocationRepository locationRepository) {
+        this.locationRepository = locationRepository;
+    }
 
     @PostMapping("/storeLocation")
-    public ResponseEntity<String> storeLocation(
+    ResponseEntity<Object> storeLocation(
             @RequestHeader("token") String token,
             @Valid @RequestBody LocationRequestCommand locationRequestCommand,
             HttpServletResponse response) {
 
         response.addHeader("Access-Control-Allow-Methods", "POST");
-        response.addHeader("Access-Control-Allow-Origin", DOMAIN);
+        response.addHeader("Access-Control-Allow-Origin", domain);
 
         if (!geoToken.equals(token)) {
-            return new ResponseEntity<>("FORBIDDEN", HttpStatus.FORBIDDEN);
+            ErrorDto error = ErrorDto.builder()
+                    .status(HttpStatus.FORBIDDEN.value())
+                    .message("Invalid token")
+                    .build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
         }
 
         log.info("Storing geolocation for pets: {}", locationRequestCommand);
 
-        Location location = new Location(locationRequestCommand.getLat(), locationRequestCommand.getLng());
-        locationRequestCommand.getPetIds().forEach(petId -> {
-            petLocations.put(petId, location);
-        });
+        Location location = new Location(locationRequestCommand.getLatitude(), locationRequestCommand.getLongitude());
+        locationRequestCommand.getPetIds().forEach(petId -> locationRepository.save(petId, location));
 
-        return new ResponseEntity<>("OK", HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("Location stored successfully");
     }
 }
