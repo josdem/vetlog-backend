@@ -66,8 +66,5 @@ public class LocationController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body("Location stored successfully");
     }
-    @GetMapping("/test")
-    public String test() {
-        return "Controller is working!";
-    }
+
 }
