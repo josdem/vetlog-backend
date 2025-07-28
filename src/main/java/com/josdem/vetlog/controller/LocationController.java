@@ -16,19 +16,18 @@
 
 package com.josdem.vetlog.controller;
 
-import com.josdem.vetlog.dto.ErrorDto;
+
+import com.josdem.vetlog.exception.InvalidTokenException;
 import com.josdem.vetlog.model.Location;
 import com.josdem.vetlog.repository.LocationRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.josdem.vetlog.command.LocationRequestCommand;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @RestController
@@ -57,13 +56,8 @@ public class LocationController {
         response.addHeader("Access-Control-Allow-Origin", domain);
 
         if (!geoToken.equals(token)) {
-            ErrorDto error = ErrorDto.builder()
-                    .status(HttpStatus.FORBIDDEN.value())
-                    .message("Invalid token")
-                    .build();
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            throw new InvalidTokenException("Invalid token");
         }
-
         log.info("Storing geolocation for pets: {}", locationRequestCommand);
 
         Location location = new Location(locationRequestCommand.getLatitude(), locationRequestCommand.getLongitude());
@@ -71,5 +65,9 @@ public class LocationController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body("Location stored successfully");
+    }
+    @GetMapping("/test")
+    public String test() {
+        return "Controller is working!";
     }
 }
