@@ -23,6 +23,14 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-public record LocationRequestCommand(@NotNull Double latitude, @NotNull Double longitude,
-                                     @NotNull @Valid List<@Min(1) Long> petIds) implements Command {
+public record LocationRequestCommand(
+        @NotNull
+        Double latitude,
+
+        @NotNull
+        Double longitude,
+
+        @NotNull @Valid
+        List<@Min(1) Long> petIds
+) implements Command {
 }
