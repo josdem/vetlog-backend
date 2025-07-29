@@ -23,8 +23,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInfo
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
@@ -34,9 +35,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 
 
-@WebMvcTest(LocationController::class)  // ← CHANGE BACK TO @WebMvcTest
-@TestPropertySource(properties = ["geoToken=testToken", "app.domain=testdomain.com"])
 @SpringBootTest
+@AutoConfigureMockMvc
+@TestPropertySource(properties = ["geoToken=testToken", "app.domain=testdomain.com"])
 class LocationControllerTest {
 
     @Autowired
@@ -45,8 +46,6 @@ class LocationControllerTest {
     @Autowired
     private lateinit var objectMapper: ObjectMapper
 
-    @Suppress("DEPRECATION")
-    @MockBean
     private lateinit var locationRepository: LocationRepository
 
     private val log = LoggerFactory.getLogger(this::class.java)
@@ -55,11 +54,7 @@ class LocationControllerTest {
     fun `should store location successfully with valid token`(testInfo: TestInfo) {
         log.info(testInfo.displayName)
 
-        val locationCommand = LocationRequestCommand().apply {
-            latitude = 40.7128
-            longitude = -74.0060
-            petIds = listOf(1L, 2L)
-        }
+        val locationCommand = LocationRequestCommand(40.7128, -74.0060, listOf(1L, 2L))
 
         mockMvc
             .perform(
@@ -76,11 +71,7 @@ class LocationControllerTest {
     fun `should return forbidden with invalid token`(testInfo: TestInfo) {
         log.info(testInfo.displayName)
 
-        val locationCommand = LocationRequestCommand().apply {
-            latitude = 40.7128
-            longitude = -74.0060
-            petIds = listOf(3L, 4L)
-        }
+        val locationCommand = LocationRequestCommand(40.7128, -74.0060, listOf(3L, 2L))
 
         mockMvc
             .perform(
