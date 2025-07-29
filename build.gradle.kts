@@ -15,7 +15,7 @@ java {
 }
 
 kotlin {
-	jvmToolchain(21)  // ← Jose's preferred simple approach
+	jvmToolchain(21)
 }
 
 configurations {
