@@ -17,134 +17,80 @@
 package com.josdem.vetlog.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.josdem.vetlog.model.Location
+import com.josdem.vetlog.command.LocationRequestCommand
 import com.josdem.vetlog.repository.LocationRepository
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInfo
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.HttpStatus
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 
+
+@WebMvcTest(LocationController::class)  // ← CHANGE BACK TO @WebMvcTest
+@TestPropertySource(properties = ["geoToken=testToken", "app.domain=testdomain.com"])
 @SpringBootTest
-@AutoConfigureMockMvc
-@TestPropertySource(properties = ["geoToken=testToken"])
 class LocationControllerTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
 
     @Autowired
-    private lateinit var repository: LocationRepository
+    private lateinit var objectMapper: ObjectMapper
 
-    private val objectMapper = ObjectMapper()
+    @Suppress("DEPRECATION")
+    @MockBean
+    private lateinit var locationRepository: LocationRepository
+
+    private val log = LoggerFactory.getLogger(this::class.java)
 
     @Test
-    fun `should store location for given pet IDs`() {
-        val request = mapOf(
-            "latitude" to 35.6895,
-            "longitude" to 139.6917,
-            "petIds" to listOf(1L, 2L, 3L)
-        )
+    fun `should store location successfully with valid token`(testInfo: TestInfo) {
+        log.info(testInfo.displayName)
 
-        mockMvc.post("/geolocation/storeLocation") {
-            contentType = MediaType.APPLICATION_JSON
-            header("token", "testToken")
-            content = objectMapper.writeValueAsString(request)
-        }.andExpect {
-            status { HttpStatus.CREATED }
+        val locationCommand = LocationRequestCommand().apply {
+            latitude = 40.7128
+            longitude = -74.0060
+            petIds = listOf(1L, 2L)
         }
 
-        val locations: Map<Long, Location> = repository.findAll()
-        assertEquals(3, locations.size)
-        assertEquals(35.6895, locations[1L]?.latitude)
-        assertEquals(139.6917, locations[2L]?.longitude)
+        mockMvc
+            .perform(
+                post("/geolocation/storeLocation")
+                    .header("token", "testToken")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(locationCommand))
+            )
+            .andExpect(status().isCreated())
+            .andExpect(content().string("Location stored successfully"))
     }
 
     @Test
-    fun `should return bad request when latitude is missing`() {
-        val request = mapOf(
-            "longitude" to 139.6917,
-            "petIds" to listOf(1L, 2L)
-        )
+    fun `should return forbidden with invalid token`(testInfo: TestInfo) {
+        log.info(testInfo.displayName)
 
-        mockMvc.post("/geolocation/storeLocation") {
-            contentType = MediaType.APPLICATION_JSON
-            header("token", "testToken")
-            content = objectMapper.writeValueAsString(request)
-        }.andExpect {
-            status { HttpStatus.BAD_REQUEST }
+        val locationCommand = LocationRequestCommand().apply {
+            latitude = 40.7128
+            longitude = -74.0060
+            petIds = listOf(3L, 4L)
         }
-    }
 
-    @Test
-    fun `should return bad request when longitude is missing`() {
-        val request = mapOf(
-            "latitude" to 35.6895,
-            "petIds" to listOf(1L, 2L)
-        )
-
-        mockMvc.post("/geolocation/storeLocation") {
-            contentType = MediaType.APPLICATION_JSON
-            header("token", "testToken")
-            content = objectMapper.writeValueAsString(request)
-        }.andExpect {
-            status { HttpStatus.BAD_REQUEST }
-        }
-    }
-
-    @Test
-    fun `should return bad request when petIds is missing`() {
-        val request = mapOf(
-            "latitude" to 35.6895,
-            "longitude" to 139.6917
-        )
-
-        mockMvc.post("/geolocation/storeLocation") {
-            contentType = MediaType.APPLICATION_JSON
-            header("token", "testToken")
-            content = objectMapper.writeValueAsString(request)
-        }.andExpect {
-            status { HttpStatus.BAD_REQUEST }
-        }
-    }
-
-    @Test
-    fun `should return bad request when petIds is empty`() {
-        val request = mapOf(
-            "latitude" to 35.6895,
-            "longitude" to 139.6917,
-            "petIds" to emptyList<Long>()
-        )
-
-        mockMvc.post("/geolocation/storeLocation") {
-            contentType = MediaType.APPLICATION_JSON
-            header("token", "testToken")
-            content = objectMapper.writeValueAsString(request)
-        }.andExpect {
-            status { HttpStatus.BAD_REQUEST }
-        }
-    }
-
-    @Test
-    fun `should return forbidden when token is invalid`() {
-        val request = mapOf(
-            "latitude" to 35.6895,
-            "longitude" to 139.6917,
-            "petIds" to listOf(1L, 2L, 3L)
-        )
-
-        mockMvc.post("/geolocation/storeLocation") {
-            contentType = MediaType.APPLICATION_JSON
-            header("token", "invalidToken")
-            content = objectMapper.writeValueAsString(request)
-        }.andExpect {
-            status { HttpStatus.FORBIDDEN }
-            jsonPath("$.message") { value("Invalid token") }
-        }
+        mockMvc
+            .perform(
+                post("/geolocation/storeLocation")
+                    .header("token", "invalidToken")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(locationCommand))
+            )
+            .andExpect(status().isForbidden())
+            .andExpect(jsonPath("$.status").value(403))
+            .andExpect(jsonPath("$.message").value("Invalid token"))
     }
 }

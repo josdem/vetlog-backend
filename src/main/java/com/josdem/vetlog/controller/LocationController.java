@@ -13,10 +13,9 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-
 package com.josdem.vetlog.controller;
 
-import com.josdem.vetlog.dto.ErrorDto;
+import com.josdem.vetlog.exception.InvalidTokenException;
 import com.josdem.vetlog.model.Location;
 import com.josdem.vetlog.repository.LocationRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -46,22 +45,17 @@ public class LocationController {
     }
 
     @PostMapping("/storeLocation")
-    ResponseEntity<Object> storeLocation(
-            @RequestHeader("token") String token,
-            @Valid @RequestBody LocationRequestCommand locationRequestCommand,
-            HttpServletResponse response) {
+    ResponseEntity<String> storeLocation(
+                                           @RequestHeader("token") String token,
+                                           @Valid @RequestBody LocationRequestCommand locationRequestCommand,
+                                           HttpServletResponse response) {
 
         response.addHeader("Access-Control-Allow-Methods", "POST");
         response.addHeader("Access-Control-Allow-Origin", domain);
 
         if (!geoToken.equals(token)) {
-            ErrorDto error = ErrorDto.builder()
-                    .status(HttpStatus.FORBIDDEN.value())
-                    .message("Invalid token")
-                    .build();
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            throw new InvalidTokenException("Invalid token");
         }
-
         log.info("Storing geolocation for pets: {}", locationRequestCommand);
 
         Location location = new Location(locationRequestCommand.latitude(), locationRequestCommand.longitude());
