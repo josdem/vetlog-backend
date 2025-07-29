@@ -33,8 +33,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 
+
 @WebMvcTest(LocationController::class)  // ← CHANGE BACK TO @WebMvcTest
 @TestPropertySource(properties = ["geoToken=testToken", "app.domain=testdomain.com"])
+@SpringBootTest
 class LocationControllerTest {
 
     @Autowired
