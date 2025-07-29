@@ -34,6 +34,15 @@
         "review",
         "code"
       ]
+    },
+    {
+      "login": "Kate1998-source",
+      "name": "Kate1998-source",
+      "avatar_url": "https://avatars.githubusercontent.com/u/75168937?v=4",
+      "profile": "https://github.com/Kate1998-source",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
