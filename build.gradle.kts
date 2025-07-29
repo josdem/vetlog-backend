@@ -14,6 +14,7 @@ java {
 	}
 }
 
+
 configurations {
 	compileOnly {
 		extendsFrom(configurations.annotationProcessor.get())
@@ -27,6 +28,7 @@ repositories {
 dependencies {
 	implementation(kotlin("stdlib"))
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
 	implementation("jakarta.validation:jakarta.validation-api:3.0.2")
 	implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
 	compileOnly("org.projectlombok:lombok")
@@ -36,6 +38,7 @@ dependencies {
 	}
 	testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
 }
 
 tasks.withType<Test> {
