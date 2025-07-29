@@ -15,6 +15,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "bestemic",
+      "name": "Przemek Pawlik ",
+      "avatar_url": "https://avatars.githubusercontent.com/u/33027221?v=4",
+      "profile": "https://github.com/bestemic",
+      "contributions": [
+        "review"
+      ]
     }
   ],
   "contributorsPerLine": 7,
