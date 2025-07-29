@@ -16,14 +16,26 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<ErrorDto> handleInvalidTokenException(
             InvalidTokenException ex, WebRequest request) {
+        log.error("Invalid token exception: {}", ex.getMessage());
 
-        log.error("Invalid token error: {}", ex.getMessage());
-
-        ErrorDto error = ErrorDto.builder()
+        ErrorDto errorDto = ErrorDto.builder()
                 .status(HttpStatus.FORBIDDEN.value())
                 .message(ex.getMessage())
                 .build();
 
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+        return new ResponseEntity<>(errorDto, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorDto> handleGenericException(
+            Exception ex, WebRequest request) {
+        log.error("Unexpected exception: {}", ex.getMessage(), ex);
+
+        ErrorDto errorDto = ErrorDto.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message("Internal server error")
+                .build();
+
+        return new ResponseEntity<>(errorDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

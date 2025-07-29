@@ -13,9 +13,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-
 package com.josdem.vetlog.controller;
-
 
 import com.josdem.vetlog.exception.InvalidTokenException;
 import com.josdem.vetlog.model.Location;
@@ -47,10 +45,10 @@ public class LocationController {
     }
 
     @PostMapping("/storeLocation")
-    ResponseEntity<Object> storeLocation(
-            @RequestHeader("token") String token,
-            @Valid @RequestBody LocationRequestCommand locationRequestCommand,
-            HttpServletResponse response) {
+    ResponseEntity<String> storeLocation(
+                                           @RequestHeader("token") String token,
+                                           @Valid @RequestBody LocationRequestCommand locationRequestCommand,
+                                           HttpServletResponse response) {
 
         response.addHeader("Access-Control-Allow-Methods", "POST");
         response.addHeader("Access-Control-Allow-Origin", domain);
@@ -66,5 +64,4 @@ public class LocationController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body("Location stored successfully");
     }
-
 }

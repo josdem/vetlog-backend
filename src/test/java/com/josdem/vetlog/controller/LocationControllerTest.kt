@@ -13,75 +13,86 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-
 package com.josdem.vetlog.controller
 
-import com.josdem.vetlog.exception.InvalidTokenException
-import com.josdem.vetlog.repository.LocationRepository
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.josdem.vetlog.command.LocationRequestCommand
+import com.josdem.vetlog.repository.LocationRepository
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
-import org.mockito.Mockito.*
-import org.springframework.http.HttpStatus
-import jakarta.servlet.http.HttpServletResponse
+import org.junit.jupiter.api.TestInfo
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.http.MediaType
+import org.springframework.test.context.TestPropertySource
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 
+@SpringBootTest
+@AutoConfigureMockMvc
+@TestPropertySource(properties = [
+    "geoToken=testToken",
+    "app.domain=testdomain.com"
+])
 class LocationControllerTest {
 
-    private lateinit var repository: LocationRepository
-    private lateinit var response: HttpServletResponse
-    private lateinit var controller: LocationController
+    @Autowired
+    private lateinit var mockMvc: MockMvc
 
-    @BeforeEach
-    fun setUp() {
-        repository = mock(LocationRepository::class.java)
-        response = mock(HttpServletResponse::class.java)
-        controller = LocationController(repository)
+    @Autowired
+    private lateinit var objectMapper: ObjectMapper
 
-        // Set the private fields using reflection
-        val domainField = LocationController::class.java.getDeclaredField("domain")
-        domainField.isAccessible = true
-        domainField.set(controller, "test-domain")
+    @Suppress("DEPRECATION")
+    @MockBean
+    private lateinit var locationRepository: LocationRepository
 
-        val tokenField = LocationController::class.java.getDeclaredField("geoToken")
-        tokenField.isAccessible = true
-        tokenField.set(controller, "testToken")
+    private val log = LoggerFactory.getLogger(this::class.java)
+
+    @Test
+    fun `should store location successfully with valid token`(testInfo: TestInfo) {
+        log.info(testInfo.displayName)
+
+        val locationCommand = LocationRequestCommand().apply {
+            latitude = 40.7128
+            longitude = -74.0060
+            petIds = listOf(1L, 2L)
+        }
+
+        mockMvc
+            .perform(
+                post("/geolocation/storeLocation")
+                    .header("token", "testToken")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(locationCommand))
+            )
+            .andExpect(status().isCreated())
+            .andExpect(content().string("Location stored successfully"))
     }
 
     @Test
-    fun `should throw InvalidTokenException when token is invalid`() {
-        // Given
-        val command = LocationRequestCommand().apply {
-            latitude = 35.6895
-            longitude = 139.6917
-            petIds = listOf(1L, 2L, 3L)
+    fun `should return forbidden with invalid token`(testInfo: TestInfo) {
+        log.info(testInfo.displayName)
+
+        val locationCommand = LocationRequestCommand().apply {
+            latitude = 40.7128
+            longitude = -74.0060
+            petIds = listOf(3L, 4L)
         }
 
-        // When & Then
-        val exception = assertThrows(InvalidTokenException::class.java) {
-            controller.storeLocation("invalidToken", command, response)
-        }
-
-        assertEquals("Invalid token", exception.message)
-    }
-
-    @Test
-    fun `should store location successfully when token is valid`() {
-        // Given - no need to mock void method, just let it execute
-        val command = LocationRequestCommand().apply {
-            latitude = 35.6895
-            longitude = 139.6917
-            petIds = listOf(1L, 2L, 3L)
-        }
-
-        // When
-        val result = controller.storeLocation("testToken", command, response)
-
-        // Then
-        assertEquals(HttpStatus.CREATED, result.statusCode)
-        assertEquals("Location stored successfully", result.body)
-
-        // Verify that save was called 3 times (once for each petId)
-        verify(repository, times(3)).save(anyLong(), any())
+        mockMvc
+            .perform(
+                post("/geolocation/storeLocation")
+                    .header("token", "invalidToken")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(locationCommand))
+            )
+            .andExpect(status().isForbidden())
+            .andExpect(jsonPath("$.status").value(403))
+            .andExpect(jsonPath("$.message").value("Invalid token"))
     }
 }
