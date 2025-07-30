@@ -1,4 +1,4 @@
-package com.josdem.vetlog;
+package com.josdem.vetlog.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
