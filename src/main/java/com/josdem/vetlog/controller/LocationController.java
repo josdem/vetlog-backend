@@ -26,6 +26,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.josdem.vetlog.command.LocationRequestCommand;
+import com.josdem.vetlog.command.PetLocationCommand;
 
 @Slf4j
 @RestController
@@ -64,4 +65,20 @@ public class LocationController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body("Location stored successfully");
     }
+
+     @PostMapping("/storePetLocation")
+    public ResponseEntity<String> storePets(
+                                            @Valid @RequestBody PetLocationCommand pets ,
+                                            HttpServletResponse response){
+                                              
+      log.info("Storing pets: {}", pets.toString());
+      response.addHeader("Access-Control-Allow-Methods", "POST");
+      response.addHeader("Access-Control-Allow-Origin", domain);
+
+      pets.petsIds().forEach(id -> {
+          locationRepository.save(id, new Location(0.00 , 0.00)); 
+      });
+
+      return new ResponseEntity<>("Created new pets", HttpStatus.CREATED);
+    } 
 }

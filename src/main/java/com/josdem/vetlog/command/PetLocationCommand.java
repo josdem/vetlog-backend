@@ -17,7 +17,8 @@
 package com.josdem.vetlog.command;
 
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 
 public record PetLocationCommand(
     @NotNull(message = "Pets Ids cannot be null")
-    Iterable<Long> petsIds) implements Command {}
+    List<Long> petsIds){}
