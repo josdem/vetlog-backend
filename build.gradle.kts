@@ -41,9 +41,9 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib")
 
 	// Database
-//	runtimeOnly("com.mysql:mysql-connector-j")
-//	testImplementation("com.h2database:h2")
-//
+	runtimeOnly("com.mysql:mysql-connector-j")
+	testImplementation("com.h2database:h2")
+
 	// Lombok
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
