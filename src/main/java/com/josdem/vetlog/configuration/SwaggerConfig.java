@@ -1,4 +1,4 @@
-package com.josdem.vetlog.Configuration;
+package com.josdem.vetlog.configuration;
 
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.OpenAPI;

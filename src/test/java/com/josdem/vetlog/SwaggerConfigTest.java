@@ -1,5 +1,5 @@
 package com.josdem.vetlog;
-import com.josdem.vetlog.Configuration.SwaggerConfig;
+import com.josdem.vetlog.configuration.SwaggerConfig;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
