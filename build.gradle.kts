@@ -31,6 +31,9 @@ repositories {
 dependencies {
 	// Core Spring Boot
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
+	implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+	implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 
@@ -50,6 +53,7 @@ dependencies {
 	testImplementation("org.jetbrains.kotlin:kotlin-test")
 	testImplementation(kotlin("test"))
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
 }
 
 tasks.withType<Test> {
