@@ -34,13 +34,16 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 
+	//Swagger Dependency
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
+
 	// Kotlin support
 	implementation("org.jetbrains.kotlin:kotlin-stdlib")
 
 	// Database
-	runtimeOnly("com.mysql:mysql-connector-j")
-	testImplementation("com.h2database:h2")
-
+//	runtimeOnly("com.mysql:mysql-connector-j")
+//	testImplementation("com.h2database:h2")
+//
 	// Lombok
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
