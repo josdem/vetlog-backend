@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class SwaggerConfig {
+
     @Bean
     fun vetlogOpenAPI(): OpenAPI {
         return OpenAPI()
@@ -18,4 +19,3 @@ class SwaggerConfig {
             )
     }
 }
-
