@@ -1,6 +1,6 @@
 vetlog-backend
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 ----------------------------------------------
 Vetlog backend / API
@@ -37,6 +37,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Kate1998-source"><img src="https://avatars.githubusercontent.com/u/75168937?v=4?s=100" width="100px;" alt="Kate1998-source"/><br /><sub><b>Kate1998-source</b></sub></a><br /><a href="https://github.com/josdem/vetlog-backend/commits?author=Kate1998-source" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Daksh021"><img src="https://avatars.githubusercontent.com/u/143600176?v=4?s=100" width="100px;" alt="Daksh Tiwary"/><br /><sub><b>Daksh Tiwary</b></sub></a><br /><a href="https://github.com/josdem/vetlog-backend/commits?author=Daksh021" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Marian-Tataru"><img src="https://avatars.githubusercontent.com/u/97685013?v=4?s=100" width="100px;" alt="Marian-Tataru"/><br /><sub><b>Marian-Tataru</b></sub></a><br /><a href="https://github.com/josdem/vetlog-backend/commits?author=Marian-Tataru" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/mittalVaghela"><img src="https://avatars.githubusercontent.com/u/112476727?v=4?s=100" width="100px;" alt="Mittal Vaghela"/><br /><sub><b>Mittal Vaghela</b></sub></a><br /><a href="#infra-mittalVaghela" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
     </tr>
   </tbody>
 </table>
