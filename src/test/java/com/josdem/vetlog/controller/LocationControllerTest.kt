@@ -84,4 +84,22 @@ class LocationControllerTest {
             .andExpect(jsonPath("$.status").value(403))
             .andExpect(jsonPath("$.message").value("Invalid token"))
     }
+
+    @Test 
+    fun `should store pets ids and relative locations`(testInfo: TestInfo){
+      val petLocationCommand = PetLocationCommand(listOf(1L, 2L, 3L))
+      locationRepository = LocationRepository()
+      locationRepository.save(1L,Location(0.0,0.0))
+      locationRepository.save(2L,Location(0.0,0.0))
+      locationRepository.save(3L,Location(0.0,0.0))
+  
+      mockMvc
+        .perform(
+          post("/geolocation/storePetLocation")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(petLocationCommand))
+      ).andExpect(status().isCreated())
+      
+      assertEquals(3,locationRepository.findAll().size)
+    }
 }
