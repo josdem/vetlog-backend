@@ -18,13 +18,15 @@ package com.josdem.vetlog.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.josdem.vetlog.command.LocationRequestCommand
+import com.josdem.vetlog.command.PetLocationCommand
+import com.josdem.vetlog.model.Location
 import com.josdem.vetlog.repository.LocationRepository
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInfo
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
@@ -89,7 +91,7 @@ class LocationControllerTest {
     fun `should store pets ids and relative locations`(testInfo: TestInfo){
       val petLocationCommand = PetLocationCommand(listOf(1L, 2L, 3L))
       locationRepository = LocationRepository()
-      locationRepository.save(1L,Location(0.0,0.0))
+      locationRepository.save(1L, Location(0.0, 0.0))
       locationRepository.save(2L,Location(0.0,0.0))
       locationRepository.save(3L,Location(0.0,0.0))
   
