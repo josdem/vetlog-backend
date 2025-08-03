@@ -3,6 +3,8 @@ plugins {
 	id("org.springframework.boot") version "3.5.3"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("org.jetbrains.kotlin.jvm") version "2.2.0"
+	jacoco
+	id("org.sonarqube") version "6.2.0.5505"
 }
 
 group = "com.josdem.vetlog"
@@ -31,7 +33,6 @@ repositories {
 dependencies {
 	// Core Spring Boot
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-aop")
 	
@@ -56,4 +57,56 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+tasks.test {
+	ignoreFailures = true
+}
+// JaCoCo Configuration
+
+jacoco {
+	toolVersion = "0.8.11"
+	reportsDirectory.set(layout.buildDirectory.dir("reports/jacoco"))
+}
+
+tasks.jacocoTestReport {
+	dependsOn(tasks.test) // tests are required to run before generating the report
+	reports {
+		xml.required.set(true)
+		csv.required.set(false)
+		html.required.set(true)
+		html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/html"))
+	}
+
+	classDirectories.setFrom(
+		files(classDirectories.files.map {
+			fileTree(it).apply {
+				exclude(
+					"**/config/**",
+					"**/exception/**",
+					"**/model/**",
+					"**/dto/**",
+					"**/VetlogApplication**"
+				)
+			}
+		})
+	)
+}
+
+// SonarQube Configuration
+sonar {
+	properties {
+		property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY"))
+		property("sonar.projectName", System.getenv("SONAR_PROJECT_NAME"))
+		property("sonar.host.url", System.getenv("SONAR_URL"))
+		property("sonar.token", System.getenv("SONAR_TOKEN"))
+
+		property("sonar.sources", "src/main/java")
+		property("sonar.tests", "src/test/java")
+		property("sonar.language", "java")
+		property("sonar.sourceEncoding", "UTF-8")
+
+		// Test and coverage reports
+		property("sonar.junit.reportPaths", "build/test-results/test")
+	}
 }

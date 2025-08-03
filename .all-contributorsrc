@@ -43,6 +43,33 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Daksh021",
+      "name": "Daksh Tiwary",
+      "avatar_url": "https://avatars.githubusercontent.com/u/143600176?v=4",
+      "profile": "https://github.com/Daksh021",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Marian-Tataru",
+      "name": "Marian-Tataru",
+      "avatar_url": "https://avatars.githubusercontent.com/u/97685013?v=4",
+      "profile": "https://github.com/Marian-Tataru",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "mittalVaghela",
+      "name": "Mittal Vaghela",
+      "avatar_url": "https://avatars.githubusercontent.com/u/112476727?v=4",
+      "profile": "https://github.com/mittalVaghela",
+      "contributions": [
+        "infra"
+      ]
     }
   ],
   "contributorsPerLine": 7,
