@@ -52,6 +52,33 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Marian-Tataru",
+      "name": "Marian-Tataru",
+      "avatar_url": "https://avatars.githubusercontent.com/u/97685013?v=4",
+      "profile": "https://github.com/Marian-Tataru",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "mittalVaghela",
+      "name": "Mittal Vaghela",
+      "avatar_url": "https://avatars.githubusercontent.com/u/112476727?v=4",
+      "profile": "https://github.com/mittalVaghela",
+      "contributions": [
+        "infra"
+      ]
+    },
+    {
+      "login": "62arondsouza",
+      "name": "Aron Dsouza",
+      "avatar_url": "https://avatars.githubusercontent.com/u/96406889?v=4",
+      "profile": "https://github.com/62arondsouza",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
