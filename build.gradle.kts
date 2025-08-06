@@ -101,7 +101,7 @@ sonar {
 		property("sonar.projectName", System.getenv("SONAR_PROJECT_NAME"))
 		property("sonar.host.url", System.getenv("SONAR_URL"))
 		property("sonar.token", System.getenv("SONAR_TOKEN"))
-
+		property("sonar.organization","josdem-io")
 		property("sonar.sources", "src/main/java")
 		property("sonar.tests", "src/test/java")
 		property("sonar.language", "java")
