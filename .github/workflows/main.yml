@@ -1,7 +1,7 @@
 name: Run Tests
 on:
   push:
-    branches: [ "main", "hotFix/fixing-sonar-config" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 env:
