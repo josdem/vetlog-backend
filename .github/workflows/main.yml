@@ -43,4 +43,6 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
           SONAR_PROJECT_NAME: ${{ secrets.SONAR_PROJECT_NAME }}
-        run: ./gradlew jacocoTestReport sonar --stacktrace
+        run: |
+          echo "SONAR_HOST_URL: $SONAR_HOST_URL"
+          ./gradlew jacocoTestReport sonar --stacktrace
