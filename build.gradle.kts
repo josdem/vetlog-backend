@@ -34,10 +34,11 @@ dependencies {
 	// Core Spring Boot
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
-
+	implementation("org.springframework.boot:spring-boot-starter-aop")
+	
 	//Swagger Dependency
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
-
+	
 	// Kotlin support
 	implementation("org.jetbrains.kotlin:kotlin-stdlib")
 
@@ -51,6 +52,7 @@ dependencies {
 
 	// Test dependencies
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1")
 	testImplementation("org.jetbrains.kotlin:kotlin-test")
 	testImplementation(kotlin("test"))
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
