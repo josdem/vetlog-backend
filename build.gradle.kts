@@ -36,6 +36,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 	
 	//Swagger Dependency
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
@@ -66,8 +67,8 @@ tasks.withType<Test> {
 tasks.test {
 	ignoreFailures = true
 }
-// JaCoCo Configuration
 
+// JaCoCo Configuration
 jacoco {
 	toolVersion = "0.8.11"
 	reportsDirectory.set(layout.buildDirectory.dir("reports/jacoco"))
