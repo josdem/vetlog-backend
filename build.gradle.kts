@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.josdem.vetlog"
-version = "1.0.0"
+version = "1.1.0"
 
 java {
 	toolchain {
@@ -34,9 +34,11 @@ dependencies {
 	// Core Spring Boot
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
-
+	implementation("org.springframework.boot:spring-boot-starter-aop")
+	
 	//Swagger Dependency
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
+
 	// Kotlin support
 	implementation("org.jetbrains.kotlin:kotlin-stdlib")
 
@@ -50,6 +52,7 @@ dependencies {
 
 	// Test dependencies
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1")
 	testImplementation("org.jetbrains.kotlin:kotlin-test")
 	testImplementation(kotlin("test"))
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -99,11 +102,8 @@ tasks.jacocoTestReport {
 // SonarQube Configuration
 sonar {
 	properties {
-		property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY"))
-		property("sonar.projectName", System.getenv("SONAR_PROJECT_NAME"))
-		property("sonar.host.url", System.getenv("SONAR_URL"))
-		property("sonar.token", System.getenv("SONAR_TOKEN"))
-
+		property("sonar.host.url", "https://sonarcloud.io")
+		property("sonar.organization","josdem-io")
 		property("sonar.sources", "src/main/java")
 		property("sonar.tests", "src/test/java")
 		property("sonar.language", "java")

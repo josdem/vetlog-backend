@@ -79,6 +79,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "brendanddev",
+      "name": "Brendan Dileo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/124395674?v=4",
+      "profile": "https://github.com/brendanddev",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
