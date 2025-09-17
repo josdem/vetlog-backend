@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class HazelcastConfiguration {
 
    private static final int MAX_HEAP_PERCENTAGE = 80; // Max 80% heap usage
-   private static final int TTL_SECONDS = 3600; // 1 hour TTL
+   private static final int TTL_SECONDS = -1; // Entries do not expire
 
    @Bean
    public HazelcastInstance hazelcastInstance() {
