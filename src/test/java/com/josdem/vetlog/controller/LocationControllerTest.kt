@@ -17,13 +17,16 @@
 package com.josdem.vetlog.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.hazelcast.core.Hazelcast
 import com.josdem.vetlog.command.LocationRequestCommand
 import com.josdem.vetlog.command.PetLocationCommand
 import com.josdem.vetlog.model.Location
 import com.josdem.vetlog.repository.LocationRepository
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInfo
+import org.junit.jupiter.api.TestInstance
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -32,25 +35,29 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import kotlin.test.DefaultAsserter.assertTrue
+import kotlin.test.assertTrue
 
-
+@TestInstance(TestInstance.Lifecycle.PER_CLASS) // 👈 important
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(properties = ["geoToken=testToken", "app.domain=testdomain.com"])
-class LocationControllerTest {
-
-    @Autowired
-    private lateinit var mockMvc: MockMvc
-
-    @Autowired
-    private lateinit var objectMapper: ObjectMapper
-
-    private lateinit var locationRepository: LocationRepository
+class LocationControllerTest @Autowired constructor(
+    val mockMvc: MockMvc,
+    val objectMapper: ObjectMapper,
+    val locationRepository: LocationRepository
+) {
 
     private val log = LoggerFactory.getLogger(this::class.java)
+
+    private val testInstanceName = "test-hazelcast"
+
+    @AfterAll
+     fun tearDown() {
+        // Shutdown only the test Hazelcast instance
+        Hazelcast.getHazelcastInstanceByName(testInstanceName)?.shutdown()
+    }
 
     @Test
     fun `should store location successfully with valid token`(testInfo: TestInfo) {
@@ -90,18 +97,28 @@ class LocationControllerTest {
     @Test 
     fun `should store pets ids and relative locations`(testInfo: TestInfo){
       val petLocationCommand = PetLocationCommand(listOf(1L, 2L, 3L))
-      locationRepository = LocationRepository()
-      locationRepository.save(1L, Location(0.0, 0.0))
-      locationRepository.save(2L,Location(0.0,0.0))
-      locationRepository.save(3L,Location(0.0,0.0))
-  
-      mockMvc
-        .perform(
-          post("/geolocation/storePetLocation")
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(objectMapper.writeValueAsString(petLocationCommand))
-      ).andExpect(status().isCreated())
+        mockMvc.perform(
+            post("/geolocation/storePetLocation")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(petLocationCommand))
+        )
+            .andExpect(status().isCreated)
+
       
       assertEquals(3,locationRepository.findAll().size)
     }
+    @Test
+    fun `should find pet location by id`() {
+        // First, save a test location
+        val petLocationCommand = PetLocationCommand(listOf(11L))
+        mockMvc.perform(
+            post("/geolocation/storePetLocation")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(petLocationCommand))
+        )
+            .andExpect(status().isCreated)
+        val savedLocation: Location? = locationRepository.findByPetId(11L)
+        assertTrue(savedLocation != null, "Location should be saved and retrievable")
+    }
+
 }
