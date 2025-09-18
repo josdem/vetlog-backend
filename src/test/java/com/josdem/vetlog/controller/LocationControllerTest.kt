@@ -24,6 +24,8 @@ import com.josdem.vetlog.model.Location
 import com.josdem.vetlog.repository.LocationRepository
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInfo
 import org.junit.jupiter.api.TestInstance
@@ -36,8 +38,6 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
-import kotlin.test.DefaultAsserter.assertTrue
-import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS) // 👈 important
 @SpringBootTest
@@ -50,11 +50,15 @@ class LocationControllerTest @Autowired constructor(
 ) {
 
     private val log = LoggerFactory.getLogger(this::class.java)
-
     private val testInstanceName = "test-hazelcast"
 
+    @BeforeEach
+    fun cleanUp() {
+        locationRepository.deleteAll()
+    }
+
     @AfterAll
-     fun tearDown() {
+    fun tearDown() {
         // Shutdown only the test Hazelcast instance
         Hazelcast.getHazelcastInstanceByName(testInstanceName)?.shutdown()
     }
@@ -94,19 +98,20 @@ class LocationControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.message").value("Invalid token"))
     }
 
-    @Test 
-    fun `should store pets ids and relative locations`(testInfo: TestInfo){
-      val petLocationCommand = PetLocationCommand(listOf(1L, 2L, 3L))
+    @Test
+    fun `should store pets ids and relative locations`(testInfo: TestInfo) {
+        val petLocationCommand = PetLocationCommand(listOf(1L, 2L, 3L))
         mockMvc.perform(
             post("/geolocation/storePetLocation")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(petLocationCommand))
         )
-            .andExpect(status().isCreated)
+            .andExpect(status().isCreated())
 
-      
-      assertEquals(3,locationRepository.findAll().size)
+
+        assertEquals(3, locationRepository.findAll().size)
     }
+
     @Test
     fun `should find pet location by id`() {
         // First, save a test location
@@ -116,9 +121,56 @@ class LocationControllerTest @Autowired constructor(
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(petLocationCommand))
         )
-            .andExpect(status().isCreated)
+            .andExpect(status().isCreated())
         val savedLocation: Location? = locationRepository.findByPetId(11L)
-        assertTrue(savedLocation != null, "Location should be saved and retrievable")
+        assertNotNull(savedLocation, "Location should be saved and retrievable")
+    }
+   // --- Negative Test Cases ---
+
+    @Test
+    fun `should return bad request when missing latitude in storeLocation`() {
+        val invalidCommand = mapOf(
+            "longitude" to -74.0060,
+            "petIds" to listOf(1L, 2L)
+        )
+        val result = mockMvc.perform(
+            post("/geolocation/storeLocation")
+                .header("token", "testToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidCommand))
+        )
+            .andExpect(status().isBadRequest)
+            .andReturn()
+        log.error("Missing latitude response: ${result.response.contentAsString}")
     }
 
+    @Test
+    fun `should return bad request when missing petIds in storeLocation`() {
+        val invalidCommand = mapOf(
+            "latitude" to 40.7128,
+            "longitude" to -74.0060
+        )
+        val result = mockMvc.perform(
+            post("/geolocation/storeLocation")
+                .header("token", "testToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidCommand))
+        )
+            .andExpect(status().isBadRequest)
+            .andReturn()
+        log.error("Missing petIds response: ${result.response.contentAsString}")
+    }
+
+    @Test
+    fun `should return bad request when missing petsIds in storePetLocation`() {
+        val invalidCommand = mapOf<String, Any>()
+        val result = mockMvc.perform(
+            post("/geolocation/storePetLocation")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidCommand))
+        )
+            .andExpect(status().isBadRequest)
+            .andReturn()
+        log.error("Missing petsIds response: ${result.response.contentAsString}")
+    }
 }

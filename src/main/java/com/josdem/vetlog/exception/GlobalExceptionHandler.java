@@ -1,10 +1,14 @@
 
 package com.josdem.vetlog.exception;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.josdem.vetlog.dto.ErrorDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -37,5 +41,15 @@ public class GlobalExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(errorDto, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorDto> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        String message = ex.getBindingResult().getAllErrors().getFirst().getDefaultMessage();
+        ErrorDto errorDto = ErrorDto.builder()
+              .status(HttpStatus.BAD_REQUEST.value())
+              .message(message)
+              .build();
+        return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }
 }

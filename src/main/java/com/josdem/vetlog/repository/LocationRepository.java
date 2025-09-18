@@ -32,4 +32,7 @@ public class LocationRepository {
    public Map<Long, Location> findAll() {
       return hazelcastInstance.getMap( MAP_NAME );
    }
+   public void deleteAll() {
+      hazelcastInstance.getMap( MAP_NAME ).clear();
+   }
 }
