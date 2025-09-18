@@ -21,6 +21,7 @@ import com.josdem.vetlog.model.Location;
 import com.josdem.vetlog.repository.LocationRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -32,54 +33,49 @@ import com.josdem.vetlog.command.PetLocationCommand;
 @Slf4j
 @RestController
 @RequestMapping("/geolocation")
+@RequiredArgsConstructor
 public class LocationController {
 
-    @Value("${app.domain}")
-    private String domain;
+   @Value( "${app.domain}" )
+   private String domain;
 
-    @Value("${geoToken}")
-    private String geoToken;
+   @Value( "${geoToken}" )
+   private String geoToken;
 
-    private final LocationRepository locationRepository;
+   private final LocationRepository locationRepository;
 
-    public LocationController(LocationRepository locationRepository) {
-        this.locationRepository = locationRepository;
-    }
+   @PostMapping( "/storeLocation" )
+   ResponseEntity<String> storeLocation(
+         @RequestHeader( "token" ) String token,
+         @Valid @RequestBody LocationRequestCommand locationRequestCommand,
+         HttpServletResponse response ) {
 
-    @PostMapping("/storeLocation")
-    ResponseEntity<String> storeLocation(
-                                           @RequestHeader("token") String token,
-                                           @Valid @RequestBody LocationRequestCommand locationRequestCommand,
-                                           HttpServletResponse response) {
+      response.addHeader( "Access-Control-Allow-Methods", "POST" );
+      response.addHeader( "Access-Control-Allow-Origin", domain );
 
-        response.addHeader("Access-Control-Allow-Methods", "POST");
-        response.addHeader("Access-Control-Allow-Origin", domain);
+      if ( !geoToken.equals( token ) ) {
+         throw new InvalidTokenException( "Invalid token" );
+      }
 
-        if (!geoToken.equals(token)) {
-            throw new InvalidTokenException("Invalid token");
-        }
-        log.info("Storing geolocation for pets: {}", locationRequestCommand);
+      log.info( "Storing geolocation for pets: {}", locationRequestCommand );
 
-        Location location = new Location(locationRequestCommand.latitude(), locationRequestCommand.longitude());
-        locationRequestCommand.petIds().forEach(petId -> locationRepository.save(petId, location));
+      Location location = new Location( locationRequestCommand.latitude(), locationRequestCommand.longitude() );
+      locationRepository.saveMultiplePets( locationRequestCommand.petIds(), location );
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body("Location stored successfully");
-    }
+      return ResponseEntity.status( HttpStatus.CREATED ).body( "Location stored successfully" );
+   }
 
-     @PostMapping("/storePetLocation")
-    public ResponseEntity<String> storePets(
-                                            @Valid @RequestBody PetLocationCommand pets ,
-                                            HttpServletResponse response){
-                                              
-      log.info("Storing pets: {}", pets.toString());
-      response.addHeader("Access-Control-Allow-Methods", "POST");
-      response.addHeader("Access-Control-Allow-Origin", domain);
+   @PostMapping( "/storePetLocation" )
+   public ResponseEntity<String> storePets(
+         @Valid @RequestBody PetLocationCommand pets,
+         HttpServletResponse response ) {
 
-      pets.petsIds().forEach(id -> {
-          locationRepository.save(id, new Location(0.00 , 0.00)); 
-      });
+      log.info( "Storing pets: {}", pets );
+      response.addHeader( "Access-Control-Allow-Methods", "POST" );
+      response.addHeader( "Access-Control-Allow-Origin", domain );
 
-      return new ResponseEntity<>("Created new pets", HttpStatus.CREATED);
-    } 
+      pets.petsIds().forEach( petId -> locationRepository.save( petId, new Location( 0.00, 0.00 ) ) );
+
+      return new ResponseEntity<>( "Created new pets", HttpStatus.CREATED );
+   }
 }
