@@ -5,6 +5,7 @@ plugins {
 	id("org.jetbrains.kotlin.jvm") version "2.2.10"
 	jacoco
 	id("org.sonarqube") version "6.3.1.5724"
+	id("com.diffplug.spotless") version "6.25.0"
 }
 
 group = "com.josdem.vetlog"
@@ -111,5 +112,25 @@ sonar {
 
 		// Test and coverage reports
 		property("sonar.junit.reportPaths", "build/test-results/test")
+	}
+}
+
+// Spotless Configuration
+spotless {
+	java {
+		target("src/**/*.java")
+		googleJavaFormat("1.17.0")
+		importOrder()
+	}
+
+	kotlin {
+		target("src/**/*.kt")
+		ktfmt("0.44")
+	}
+
+	format("misc") {
+		target("*.gradle.kts", "*.md", "*.gitignore")
+		trimTrailingWhitespace()
+		endWithNewline()
 	}
 }

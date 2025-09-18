@@ -28,7 +28,7 @@ public class HazelcastConfiguration {
 
       // Map configuration
       MapConfig mapConfig = new MapConfig()
-            .setName( "configuration" )
+            .setName( "memory" )
             .setEvictionConfig( evictionConfig )
             .setTimeToLiveSeconds( TTL_SECONDS )
             .setBackupCount( 0 ); // single node
