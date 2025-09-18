@@ -1,10 +1,10 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.5.3"
+	id("org.springframework.boot") version "3.5.5"
 	id("io.spring.dependency-management") version "1.1.7"
-	id("org.jetbrains.kotlin.jvm") version "2.2.0"
+	id("org.jetbrains.kotlin.jvm") version "2.2.10"
 	jacoco
-	id("org.sonarqube") version "6.2.0.5505"
+	id("org.sonarqube") version "6.3.1.5724"
 	id("com.diffplug.spotless") version "6.25.0"
 }
 
@@ -38,8 +38,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-aop")
 	
 	//Swagger Dependency
-	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
-	
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
+
 	// Kotlin support
 	implementation("org.jetbrains.kotlin:kotlin-stdlib")
 
@@ -57,6 +57,9 @@ dependencies {
 	testImplementation("org.jetbrains.kotlin:kotlin-test")
 	testImplementation(kotlin("test"))
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+	// cache-memory
+	implementation("com.hazelcast:hazelcast-spring")
 }
 
 tasks.withType<Test> {
@@ -86,7 +89,7 @@ tasks.jacocoTestReport {
 		files(classDirectories.files.map {
 			fileTree(it).apply {
 				exclude(
-					"**/config/**",
+					"**/configuration/**",
 					"**/exception/**",
 					"**/model/**",
 					"**/dto/**",
