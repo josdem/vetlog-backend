@@ -102,7 +102,7 @@ class LocationControllerTest @Autowired constructor(
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(petLocationCommand))
         )
-            .andExpect(status().isCreated)
+            .andExpect(status().isCreated())
 
       
       assertEquals(3,locationRepository.findAll().size)
