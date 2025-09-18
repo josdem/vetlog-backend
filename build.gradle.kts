@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.josdem.vetlog"
-version = "1.1.0"
+version = "1.1.1"
 
 java {
 	toolchain {
@@ -103,7 +103,7 @@ tasks.jacocoTestReport {
 
 // SonarQube Configuration
 sonar {
-	properties {
+	properties {resources
 		property("sonar.host.url", "https://sonarcloud.io")
 		property("sonar.organization","josdem-io")
 		property("sonar.sources", "src/main/java")
