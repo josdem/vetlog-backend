@@ -135,3 +135,7 @@ spotless {
 		endWithNewline()
 	}
 }
+
+springBoot {
+    buildInfo()
+}
