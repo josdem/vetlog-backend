@@ -1,3 +1,9 @@
-spring.application.name=vetlog-backend
-geoToken=userToken
-app.domain=vetlog.org
+app:
+  domain: "vetlog.org"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+geoToken: "userToken"
+
