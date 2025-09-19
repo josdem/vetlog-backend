@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.josdem.vetlog"
-version = "1.1.0"
+version = "1.1.1"
 
 java {
 	toolchain {
@@ -36,6 +36,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 	
 	//Swagger Dependency
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
@@ -69,8 +70,8 @@ tasks.withType<Test> {
 tasks.test {
 	ignoreFailures = true
 }
-// JaCoCo Configuration
 
+// JaCoCo Configuration
 jacoco {
 	toolVersion = "0.8.11"
 	reportsDirectory.set(layout.buildDirectory.dir("reports/jacoco"))
@@ -102,7 +103,7 @@ tasks.jacocoTestReport {
 
 // SonarQube Configuration
 sonar {
-	properties {
+	properties {resources
 		property("sonar.host.url", "https://sonarcloud.io")
 		property("sonar.organization","josdem-io")
 		property("sonar.sources", "src/main/java")
