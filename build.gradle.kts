@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.josdem.vetlog"
-version = "1.1.1"
+version = "1.1.2"
 
 java {
 	toolchain {
@@ -134,4 +134,8 @@ spotless {
 		trimTrailingWhitespace()
 		endWithNewline()
 	}
+}
+
+springBoot {
+    buildInfo()
 }

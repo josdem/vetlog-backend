@@ -1,0 +1,11 @@
+app:
+  domain: "vetlog.org"
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+geoToken: "userToken"
+
