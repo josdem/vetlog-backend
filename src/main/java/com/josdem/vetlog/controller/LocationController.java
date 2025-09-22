@@ -46,6 +46,9 @@ public class LocationController {
    private final LocationRepository locationRepository;
 
   private void validateToken(String token) {
+	 if (token == null) {
+		  throw new InvalidTokenException("Missing token");
+	 }
     if (!Objects.equals(geoToken, token)) {
       throw new InvalidTokenException("Invalid token");
     }
@@ -53,7 +56,7 @@ public class LocationController {
 
   @PostMapping( "/storeLocation" )
   ResponseEntity<String> storeLocation(
-        @RequestHeader( "token" ) String token,
+        @RequestHeader( value = "token", required = false ) String token,
         @Valid @RequestBody LocationRequestCommand locationRequestCommand,
         HttpServletResponse response ) {
 
@@ -85,7 +88,7 @@ public class LocationController {
 
   @DeleteMapping( "/removeAll" )
   public ResponseEntity<String> deleteAllStoreLocations(
-      HttpServletResponse response, @RequestHeader("token") String token) {
+      HttpServletResponse response, @RequestHeader( value = "token", required = false ) String token) {
     log.info("Deleting all locations");
     response.addHeader("Access-Control-Allow-Methods", "DELETE");
     response.addHeader("Access-Control-Allow-Origin", domain);
@@ -99,7 +102,7 @@ public class LocationController {
   public ResponseEntity<String> deleteLocationsByPetIds(
       @RequestBody @Valid PetLocationCommand pets,
       HttpServletResponse response,
-      @RequestHeader("token") String token) {
+      @RequestHeader( value = "token", required = false ) String token) {
 
     log.info("Deleting locations for pets: {}", pets);
     response.addHeader("Access-Control-Allow-Methods", "DELETE");
