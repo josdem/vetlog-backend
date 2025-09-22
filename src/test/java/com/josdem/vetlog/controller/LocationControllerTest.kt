@@ -22,13 +22,9 @@ import com.josdem.vetlog.command.LocationRequestCommand
 import com.josdem.vetlog.command.PetLocationCommand
 import com.josdem.vetlog.model.Location
 import com.josdem.vetlog.repository.LocationRepository
-import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInfo
-import org.junit.jupiter.api.TestInstance
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -227,4 +223,44 @@ class LocationControllerTest @Autowired constructor(
             .andReturn()
     log.error("Delete locations with empty pet ids response: ${result.response.contentAsString}")
   }
+	@Test
+	fun `remove all should fail when token is missing`() {
+		mockMvc
+			.perform(delete("/geolocation/removeAll"))
+			.andExpect(status().isForbidden) // or whatever your code throws
+	}
+
+	@Test
+	fun `remove all should fail when invalid token`() {
+		mockMvc
+			.perform(delete("/geolocation/removeAll").header("token", "invalidToken"))
+			.andExpect(status().isForbidden) // or whatever your code throws
+	}
+
+	@Test
+	fun `remove by id should fail when token is missing`() {
+		val petLocationCommand = mapOf("petsIds" to listOf(1L, 3L))
+
+		mockMvc
+			.perform(
+				delete("/geolocation/storeLocation")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(petLocationCommand))
+			)
+			.andExpect(status().isForbidden) // or whatever your code throws
+	}
+
+	@Test
+	fun `remove by id should fail when invalid token`() {
+		val petLocationCommand = mapOf("petsIds" to listOf(1L, 3L))
+
+		mockMvc
+			.perform(
+				delete("/geolocation/storeLocation")
+					.header("token", "invalidToken")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(petLocationCommand))
+			)
+			.andExpect(status().isForbidden) // or whatever your code throws
+	}
 }
