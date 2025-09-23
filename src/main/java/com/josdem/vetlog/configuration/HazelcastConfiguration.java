@@ -15,33 +15,39 @@ import org.springframework.stereotype.Component;
 @Profile("!test")
 public class HazelcastConfiguration {
 
-   private static final int MAX_HEAP_PERCENTAGE = 80; // Max 80% heap usage
-   private static final int TTL_SECONDS = -1; // Entries do not expire
+  private static final int MAX_HEAP_PERCENTAGE = 80; // Max 80% heap usage
+  private static final int TTL_SECONDS = -1; // Entries do not expire
 
-   @Bean
-   public HazelcastInstance hazelcastInstance() {
-      // Eviction configuration
-      EvictionConfig evictionConfig = new EvictionConfig()
-            .setEvictionPolicy( EvictionPolicy.LRU )
-            .setMaxSizePolicy( MaxSizePolicy.USED_HEAP_PERCENTAGE )
-            .setSize( MAX_HEAP_PERCENTAGE );
+  @Bean
+  public HazelcastInstance hazelcastInstance() {
+    // Eviction configuration
+    EvictionConfig evictionConfig =
+        new EvictionConfig()
+            .setEvictionPolicy(EvictionPolicy.LRU)
+            .setMaxSizePolicy(MaxSizePolicy.USED_HEAP_PERCENTAGE)
+            .setSize(MAX_HEAP_PERCENTAGE);
 
-      // Map configuration
-      MapConfig mapConfig = new MapConfig()
-            .setName( "memory" )
-            .setEvictionConfig( evictionConfig )
-            .setTimeToLiveSeconds( TTL_SECONDS )
-            .setBackupCount( 0 ); // single node
+    // Map configuration
+    MapConfig mapConfig =
+        new MapConfig()
+            .setName("memory")
+            .setEvictionConfig(evictionConfig)
+            .setTimeToLiveSeconds(TTL_SECONDS)
+            .setBackupCount(0); // single node
 
-      // Hazelcast instance configuration
-      Config config = new Config();
-      config.setInstanceName( "hazelcast-instance" );
-      config.addMapConfig( mapConfig );
+    // Hazelcast instance configuration
+    Config config = new Config();
+    config.setInstanceName("hazelcast-instance");
+    config.addMapConfig(mapConfig);
 
-      // Single-node network config
-      config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled( true ); // as per your request
-      config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled( false );
+    // Single-node network config
+    config
+        .getNetworkConfig()
+        .getJoin()
+        .getMulticastConfig()
+        .setEnabled(true); // as per your request
+    config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(false);
 
-      return Hazelcast.newHazelcastInstance( config );
-   }
+    return Hazelcast.newHazelcastInstance(config);
+  }
 }

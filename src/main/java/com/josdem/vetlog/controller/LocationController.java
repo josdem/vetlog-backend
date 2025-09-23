@@ -37,58 +37,59 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class LocationController {
 
-   @Value( "${app.domain}" )
-   private String domain;
+  @Value("${app.domain}")
+  private String domain;
 
-   @Value( "${geoToken}" )
-   private String geoToken;
+  @Value("${geoToken}")
+  private String geoToken;
 
-   private final LocationRepository locationRepository;
+  private final LocationRepository locationRepository;
 
   private void validateToken(String token) {
-	 if (token == null) {
-		  throw new InvalidTokenException("Missing token");
-	 }
+    if (token == null) {
+      throw new InvalidTokenException("Missing token");
+    }
     if (!Objects.equals(geoToken, token)) {
       throw new InvalidTokenException("Invalid token");
     }
   }
 
-  @PostMapping( "/storeLocation" )
+  @PostMapping("/storeLocation")
   ResponseEntity<String> storeLocation(
-        @RequestHeader( value = "token", required = false ) String token,
-        @Valid @RequestBody LocationRequestCommand locationRequestCommand,
-        HttpServletResponse response ) {
+      @RequestHeader(value = "token", required = false) String token,
+      @Valid @RequestBody LocationRequestCommand locationRequestCommand,
+      HttpServletResponse response) {
 
-    response.addHeader( "Access-Control-Allow-Methods", "POST" );
-    response.addHeader( "Access-Control-Allow-Origin", domain );
+    response.addHeader("Access-Control-Allow-Methods", "POST");
+    response.addHeader("Access-Control-Allow-Origin", domain);
 
-    validateToken( token );
-    log.info( "Storing geolocation for pets: {}", locationRequestCommand );
+    validateToken(token);
+    log.info("Storing geolocation for pets: {}", locationRequestCommand);
 
-    Location location = new Location( locationRequestCommand.latitude(), locationRequestCommand.longitude() );
-    locationRepository.saveMultiplePets( locationRequestCommand.petIds(), location );
+    Location location =
+        new Location(locationRequestCommand.latitude(), locationRequestCommand.longitude());
+    locationRepository.saveMultiplePets(locationRequestCommand.petIds(), location);
 
-    return ResponseEntity.status( HttpStatus.CREATED ).body( "Location stored successfully" );
+    return ResponseEntity.status(HttpStatus.CREATED).body("Location stored successfully");
   }
 
-   @PostMapping( "/storePetLocation" )
-   public ResponseEntity<String> storePets(
-         @Valid @RequestBody PetLocationCommand pets,
-         HttpServletResponse response ) {
+  @PostMapping("/storePetLocation")
+  public ResponseEntity<String> storePets(
+      @Valid @RequestBody PetLocationCommand pets, HttpServletResponse response) {
 
-      log.info( "Storing pets: {}", pets );
-      response.addHeader( "Access-Control-Allow-Methods", "POST" );
-      response.addHeader( "Access-Control-Allow-Origin", domain );
+    log.info("Storing pets: {}", pets);
+    response.addHeader("Access-Control-Allow-Methods", "POST");
+    response.addHeader("Access-Control-Allow-Origin", domain);
 
-      pets.petsIds().forEach( petId -> locationRepository.save( petId, new Location( 0.00, 0.00 ) ) );
+    pets.petsIds().forEach(petId -> locationRepository.save(petId, new Location(0.00, 0.00)));
 
-     return new ResponseEntity<>( "Created new pets", HttpStatus.CREATED );
-   }
+    return new ResponseEntity<>("Created new pets", HttpStatus.CREATED);
+  }
 
-  @DeleteMapping( "/removeAll" )
+  @DeleteMapping("/removeAll")
   public ResponseEntity<String> deleteAllStoreLocations(
-      HttpServletResponse response, @RequestHeader( value = "token", required = false ) String token) {
+      HttpServletResponse response,
+      @RequestHeader(value = "token", required = false) String token) {
     log.info("Deleting all locations");
     response.addHeader("Access-Control-Allow-Methods", "DELETE");
     response.addHeader("Access-Control-Allow-Origin", domain);
@@ -98,11 +99,11 @@ public class LocationController {
     return new ResponseEntity<>("Deleted all pet's locations", HttpStatus.OK);
   }
 
-  @DeleteMapping( "/storeLocation" )
+  @DeleteMapping("/storeLocation")
   public ResponseEntity<String> deleteLocationsByPetIds(
       @RequestBody @Valid PetLocationCommand pets,
       HttpServletResponse response,
-      @RequestHeader( value = "token", required = false ) String token) {
+      @RequestHeader(value = "token", required = false) String token) {
 
     log.info("Deleting locations for pets: {}", pets);
     response.addHeader("Access-Control-Allow-Methods", "DELETE");

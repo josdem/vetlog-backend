@@ -11,22 +11,20 @@ import org.slf4j.LoggerFactory
 
 internal class ExceptionHandlingAspectTest {
 
-    @Mock
-    private lateinit var invalidTokenException: InvalidTokenException
+  @Mock private lateinit var invalidTokenException: InvalidTokenException
 
-    @InjectMocks
-    private val exceptionHandlingAspect = ExceptionHandlingAspect()
+  @InjectMocks private val exceptionHandlingAspect = ExceptionHandlingAspect()
 
-    private val log = LoggerFactory.getLogger(this::class.java)
+  private val log = LoggerFactory.getLogger(this::class.java)
 
-    @BeforeEach
-    fun setUp() {
-        MockitoAnnotations.openMocks(this)
-    }
+  @BeforeEach
+  fun setUp() {
+    MockitoAnnotations.openMocks(this)
+  }
 
-    @Test
-    fun `should handle exception`() {
-        exceptionHandlingAspect.handleServiceException(invalidTokenException)
-        verify(invalidTokenException).message
-    }
+  @Test
+  fun `should handle exception`() {
+    exceptionHandlingAspect.handleServiceException(invalidTokenException)
+    verify(invalidTokenException).message
+  }
 }

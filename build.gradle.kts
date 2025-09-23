@@ -37,7 +37,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-	
+
 	//Swagger Dependency
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
 
@@ -134,6 +134,11 @@ spotless {
 		trimTrailingWhitespace()
 		endWithNewline()
 	}
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    dependsOn("spotlessApply")
 }
 
 springBoot {

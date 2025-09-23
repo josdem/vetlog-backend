@@ -1,8 +1,4 @@
-
 package com.josdem.vetlog.exception;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import com.josdem.vetlog.dto.ErrorDto;
 import lombok.extern.slf4j.Slf4j;
@@ -17,39 +13,35 @@ import org.springframework.web.context.request.WebRequest;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(InvalidTokenException.class)
-    public ResponseEntity<ErrorDto> handleInvalidTokenException(
-            InvalidTokenException ex, WebRequest request) {
-        log.error("Invalid token exception: {}", ex.getMessage());
+  @ExceptionHandler(InvalidTokenException.class)
+  public ResponseEntity<ErrorDto> handleInvalidTokenException(
+      InvalidTokenException ex, WebRequest request) {
+    log.error("Invalid token exception: {}", ex.getMessage());
 
-        ErrorDto errorDto = ErrorDto.builder()
-                .status(HttpStatus.FORBIDDEN.value())
-                .message(ex.getMessage())
-                .build();
+    ErrorDto errorDto =
+        ErrorDto.builder().status(HttpStatus.FORBIDDEN.value()).message(ex.getMessage()).build();
 
-        return new ResponseEntity<>(errorDto, HttpStatus.FORBIDDEN);
-    }
+    return new ResponseEntity<>(errorDto, HttpStatus.FORBIDDEN);
+  }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorDto> handleGenericException(
-            Exception ex, WebRequest request) {
-        log.error("Unexpected exception: {}", ex.getMessage(), ex);
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ErrorDto> handleGenericException(Exception ex, WebRequest request) {
+    log.error("Unexpected exception: {}", ex.getMessage(), ex);
 
-        ErrorDto errorDto = ErrorDto.builder()
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .message("Internal server error")
-                .build();
+    ErrorDto errorDto =
+        ErrorDto.builder()
+            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .message("Internal server error")
+            .build();
 
-        return new ResponseEntity<>(errorDto, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return new ResponseEntity<>(errorDto, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorDto> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        String message = ex.getBindingResult().getAllErrors().getFirst().getDefaultMessage();
-        ErrorDto errorDto = ErrorDto.builder()
-              .status(HttpStatus.BAD_REQUEST.value())
-              .message(message)
-              .build();
-        return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
-    }
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ErrorDto> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    String message = ex.getBindingResult().getAllErrors().getFirst().getDefaultMessage();
+    ErrorDto errorDto =
+        ErrorDto.builder().status(HttpStatus.BAD_REQUEST.value()).message(message).build();
+    return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
+  }
 }

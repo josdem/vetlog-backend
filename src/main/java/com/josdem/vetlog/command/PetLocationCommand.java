@@ -20,5 +20,4 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record PetLocationCommand(
-    @NotNull(message = "Pets Ids cannot be null")
-    List<Long> petsIds){}
+    @NotNull(message = "Pets Ids cannot be null") List<Long> petsIds) {}

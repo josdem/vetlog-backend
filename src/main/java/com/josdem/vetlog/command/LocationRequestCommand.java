@@ -18,18 +18,12 @@ package com.josdem.vetlog.command;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
 import java.util.List;
 
 public record LocationRequestCommand(
-        @NotNull(message = "Latitude is required")
-        Double latitude,
-
-        @NotNull(message = "Longitude is required")
-        Double longitude,
-
-        @NotNull(message = "Pet IDs must be provided")
+    @NotNull(message = "Latitude is required") Double latitude,
+    @NotNull(message = "Longitude is required") Double longitude,
+    @NotNull(message = "Pet IDs must be provided")
         @Size(min = 1, message = "At least one pet ID must be provided")
-        List<Long> petIds
-) implements Command {
-}
+        List<Long> petIds)
+    implements Command {}
