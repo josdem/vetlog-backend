@@ -16,19 +16,20 @@
 
 package com.josdem.vetlog.controller;
 
+import com.josdem.vetlog.command.LocationRequestCommand;
+import com.josdem.vetlog.command.PetLocationCommand;
 import com.josdem.vetlog.exception.InvalidTokenException;
 import com.josdem.vetlog.model.Location;
 import com.josdem.vetlog.repository.LocationRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.josdem.vetlog.command.LocationRequestCommand;
-import com.josdem.vetlog.command.PetLocationCommand;
 
 @Slf4j
 @RestController
@@ -44,26 +45,32 @@ public class LocationController {
 
    private final LocationRepository locationRepository;
 
-   @PostMapping( "/storeLocation" )
-   ResponseEntity<String> storeLocation(
-         @RequestHeader( "token" ) String token,
-         @Valid @RequestBody LocationRequestCommand locationRequestCommand,
-         HttpServletResponse response ) {
+  private void validateToken(String token) {
+	 if (token == null) {
+		  throw new InvalidTokenException("Missing token");
+	 }
+    if (!Objects.equals(geoToken, token)) {
+      throw new InvalidTokenException("Invalid token");
+    }
+  }
 
-      response.addHeader( "Access-Control-Allow-Methods", "POST" );
-      response.addHeader( "Access-Control-Allow-Origin", domain );
+  @PostMapping( "/storeLocation" )
+  ResponseEntity<String> storeLocation(
+        @RequestHeader( value = "token", required = false ) String token,
+        @Valid @RequestBody LocationRequestCommand locationRequestCommand,
+        HttpServletResponse response ) {
 
-      if ( !geoToken.equals( token ) ) {
-         throw new InvalidTokenException( "Invalid token" );
-      }
+    response.addHeader( "Access-Control-Allow-Methods", "POST" );
+    response.addHeader( "Access-Control-Allow-Origin", domain );
 
-      log.info( "Storing geolocation for pets: {}", locationRequestCommand );
+    validateToken( token );
+    log.info( "Storing geolocation for pets: {}", locationRequestCommand );
 
-      Location location = new Location( locationRequestCommand.latitude(), locationRequestCommand.longitude() );
-      locationRepository.saveMultiplePets( locationRequestCommand.petIds(), location );
+    Location location = new Location( locationRequestCommand.latitude(), locationRequestCommand.longitude() );
+    locationRepository.saveMultiplePets( locationRequestCommand.petIds(), location );
 
-      return ResponseEntity.status( HttpStatus.CREATED ).body( "Location stored successfully" );
-   }
+    return ResponseEntity.status( HttpStatus.CREATED ).body( "Location stored successfully" );
+  }
 
    @PostMapping( "/storePetLocation" )
    public ResponseEntity<String> storePets(
@@ -76,6 +83,34 @@ public class LocationController {
 
       pets.petsIds().forEach( petId -> locationRepository.save( petId, new Location( 0.00, 0.00 ) ) );
 
-      return new ResponseEntity<>( "Created new pets", HttpStatus.CREATED );
+     return new ResponseEntity<>( "Created new pets", HttpStatus.CREATED );
    }
+
+  @DeleteMapping( "/removeAll" )
+  public ResponseEntity<String> deleteAllStoreLocations(
+      HttpServletResponse response, @RequestHeader( value = "token", required = false ) String token) {
+    log.info("Deleting all locations");
+    response.addHeader("Access-Control-Allow-Methods", "DELETE");
+    response.addHeader("Access-Control-Allow-Origin", domain);
+
+    validateToken(token);
+    locationRepository.deleteAll();
+    return new ResponseEntity<>("Deleted all pet's locations", HttpStatus.OK);
+  }
+
+  @DeleteMapping( "/storeLocation" )
+  public ResponseEntity<String> deleteLocationsByPetIds(
+      @RequestBody @Valid PetLocationCommand pets,
+      HttpServletResponse response,
+      @RequestHeader( value = "token", required = false ) String token) {
+
+    log.info("Deleting locations for pets: {}", pets);
+    response.addHeader("Access-Control-Allow-Methods", "DELETE");
+    response.addHeader("Access-Control-Allow-Origin", domain);
+
+    validateToken(token);
+    locationRepository.deletePets(pets.petsIds());
+    return new ResponseEntity<>(
+        "Deleted locations for pets: " + pets.petsIds(), HttpStatus.NO_CONTENT);
+  }
 }

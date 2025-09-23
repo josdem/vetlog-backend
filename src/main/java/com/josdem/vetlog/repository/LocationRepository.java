@@ -35,4 +35,8 @@ public class LocationRepository {
    public void deleteAll() {
       hazelcastInstance.getMap( MAP_NAME ).clear();
    }
+   public void deletePets( List<Long> petIds ) {
+      var petsMap = hazelcastInstance.getMap( MAP_NAME );
+      petIds.forEach( petsMap::remove );
+   }
 }

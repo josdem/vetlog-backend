@@ -22,13 +22,9 @@ import com.josdem.vetlog.command.LocationRequestCommand
 import com.josdem.vetlog.command.PetLocationCommand
 import com.josdem.vetlog.model.Location
 import com.josdem.vetlog.repository.LocationRepository
-import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInfo
-import org.junit.jupiter.api.TestInstance
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -36,6 +32,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
@@ -171,6 +168,99 @@ class LocationControllerTest @Autowired constructor(
         )
             .andExpect(status().isBadRequest)
             .andReturn()
-        log.error("Missing petsIds response: ${result.response.contentAsString}")
-    }
+    log.error("Missing petsIds response: ${result.response.contentAsString}")
+  }
+
+  @Test
+  fun `should delete all locations successfully`() {
+    // Pre-populate repository
+    locationRepository.save(1L, Location(10.0, 20.0))
+    locationRepository.save(2L, Location(30.0, 40.0))
+
+    val result =
+        mockMvc
+            .perform(delete("/geolocation/removeAll").header("token", "testToken"))
+            .andExpect(status().isOk)
+            .andExpect(content().string("Deleted all pet's locations"))
+            .andReturn()
+
+    assertEquals(0, locationRepository.findAll().size)
+  }
+
+  @Test
+  fun `should delete locations for given pet ids`() {
+    locationRepository.save(1L, Location(10.0, 20.0))
+    locationRepository.save(2L, Location(30.0, 40.0))
+    locationRepository.save(3L, Location(50.0, 60.0))
+
+    val petLocationCommand = mapOf("petsIds" to listOf(1L, 3L))
+    val result =
+        mockMvc
+            .perform(
+                delete("/geolocation/storeLocation")
+                    .header("token", "testToken")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(petLocationCommand)))
+            .andExpect(status().isNoContent)
+            .andExpect(content().string("Deleted locations for pets: [1, 3]"))
+            .andReturn()
+
+    assertEquals(1, locationRepository.findAll().size)
+    assertNotNull(locationRepository.findByPetId(2L))
+  }
+
+  @Test
+  fun `should return bad request when deleting locations with empty pet ids`() {
+    val invalidCommand = mapOf<String, Any>()
+    val result =
+        mockMvc
+            .perform(
+                delete("/geolocation/storeLocation")
+                    .header("token", "testToken")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidCommand)))
+            .andExpect(status().isBadRequest)
+            .andReturn()
+    log.error("Delete locations with empty pet ids response: ${result.response.contentAsString}")
+  }
+	@Test
+	fun `remove all should fail when token is missing`() {
+		mockMvc
+			.perform(delete("/geolocation/removeAll"))
+			.andExpect(status().isForbidden) // or whatever your code throws
+	}
+
+	@Test
+	fun `remove all should fail when invalid token`() {
+		mockMvc
+			.perform(delete("/geolocation/removeAll").header("token", "invalidToken"))
+			.andExpect(status().isForbidden) // or whatever your code throws
+	}
+
+	@Test
+	fun `remove by id should fail when token is missing`() {
+		val petLocationCommand = mapOf("petsIds" to listOf(1L, 3L))
+
+		mockMvc
+			.perform(
+				delete("/geolocation/storeLocation")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(petLocationCommand))
+			)
+			.andExpect(status().isForbidden) // or whatever your code throws
+	}
+
+	@Test
+	fun `remove by id should fail when invalid token`() {
+		val petLocationCommand = mapOf("petsIds" to listOf(1L, 3L))
+
+		mockMvc
+			.perform(
+				delete("/geolocation/storeLocation")
+					.header("token", "invalidToken")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(petLocationCommand))
+			)
+			.andExpect(status().isForbidden) // or whatever your code throws
+	}
 }
