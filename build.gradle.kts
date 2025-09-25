@@ -8,8 +8,11 @@ plugins {
 	id("com.diffplug.spotless") version "6.25.0"
 }
 
+val springDocVersion = "2.8.13"
+val mockitoKotlinVersion = "6.0.0"
+
 group = "com.josdem.vetlog"
-version = "1.1.4"
+version = "1.1.5"
 
 java {
 	toolchain {
@@ -39,7 +42,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
 	//Swagger Dependency
-	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion")
 
 	// Kotlin support
 	implementation("org.jetbrains.kotlin:kotlin-stdlib")
@@ -54,7 +57,7 @@ dependencies {
 
 	// Test dependencies
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1")
+	testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
 	testImplementation("org.jetbrains.kotlin:kotlin-test")
 	testImplementation(kotlin("test"))
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
