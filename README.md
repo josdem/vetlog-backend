@@ -25,7 +25,7 @@ https://vetlog.org/
 
 #### To Run, Execution and Configuration
 
-* https://github.com/josdem/vetlog-backend/wiki
+https://github.com/josdem/vetlog-backend/wiki
 
 ## Contributors ✨
 
