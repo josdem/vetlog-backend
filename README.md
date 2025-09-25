@@ -20,7 +20,13 @@ Vetlog backend / API
 **Note:** This project is the server side of [vetlog-spring-boot](https://github.com/josdem/vetlog-spring-boot)
 
 #### Go here for more information
+
 https://vetlog.org/
+
+#### To Run, Execution and Configuration
+
+* https://github.com/josdem/vetlog-backend/wiki
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
