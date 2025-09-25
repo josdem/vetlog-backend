@@ -8,4 +8,6 @@ management:
           - health
           - info
 geoToken: "userToken"
+server:
+  port: 8084
 
