@@ -133,6 +133,13 @@ constructor(
   // --- Negative Test Cases ---
 
   @Test
+  fun `should return not found for non-existing pet id`() {
+    mockMvc
+        .perform(get("/geolocation/storeLocation/999").header("token", "testToken"))
+        .andExpect(status().isNotFound)
+  }
+
+  @Test
   fun `should return bad request when missing latitude in storeLocation`() {
     val invalidCommand = mapOf("longitude" to -74.0060, "petIds" to listOf(1L, 2L))
     val result =
