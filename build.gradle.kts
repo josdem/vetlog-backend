@@ -12,7 +12,7 @@ val springDocVersion = "2.8.13"
 val mockitoKotlinVersion = "6.0.0"
 
 group = "com.josdem.vetlog"
-version = "1.2.0"
+version = "1.2.1"
 
 java {
 	toolchain {
