@@ -127,6 +127,9 @@ public class LocationController {
 
     validateToken(token);
     var location = locationRepository.findByPetId(petId);
+    if (location == null) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
     return new ResponseEntity<>(location, HttpStatus.OK);
   }
 }
