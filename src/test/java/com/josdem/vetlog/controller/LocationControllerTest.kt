@@ -33,8 +33,11 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS) // 👈 important
 @SpringBootTest
@@ -120,6 +123,12 @@ constructor(
         .andExpect(status().isCreated())
     val savedLocation: Location? = locationRepository.findByPetId(11L)
     assertNotNull(savedLocation, "Location should be saved and retrievable")
+
+    mockMvc
+        .perform(get("/geolocation/storeLocation/11").header("token", "testToken"))
+        .andExpect(status().isOk)
+        .andExpect(jsonPath("$.latitude").value(savedLocation?.latitude))
+        .andExpect(jsonPath("$.longitude").value(savedLocation?.longitude))
   }
   // --- Negative Test Cases ---
 

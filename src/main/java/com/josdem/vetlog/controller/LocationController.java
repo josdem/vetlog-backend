@@ -115,19 +115,18 @@ public class LocationController {
         "Deleted locations for pets: " + pets.petsIds(), HttpStatus.NO_CONTENT);
   }
 
-    @GetMapping("/storeLocation")
-    public ResponseEntity<String> getLocationsByPetId(
-            @RequestBody Long petId,
-            HttpServletResponse response,
-            @RequestHeader(value = "token", required = false) String token) {
+  @GetMapping("/storeLocation/{petId}")
+  public ResponseEntity<Location> getLocationsByPetId(
+      @PathVariable("petId") Long petId,
+      HttpServletResponse response,
+      @RequestHeader(value = "token", required = false) String token) {
 
-        log.info("Getting location for pet: {}", petId);
-        response.addHeader("Access-Control-Allow-Methods", "GET");
-        response.addHeader("Access-Control-Allow-Origin", domain);
+    log.info("Getting location for pet: {}", petId);
+    response.addHeader("Access-Control-Allow-Methods", "GET");
+    response.addHeader("Access-Control-Allow-Origin", domain);
 
-        validateToken(token);
-        locationRepository.findByPetId(petId);
-        return new ResponseEntity<>(
-                "Getting location for pet: " + petId, HttpStatus.NO_CONTENT);
-    }
+    validateToken(token);
+    var location = locationRepository.findByPetId(petId);
+    return new ResponseEntity<>(location, HttpStatus.OK);
+  }
 }
