@@ -114,4 +114,21 @@ public class LocationController {
     return new ResponseEntity<>(
         "Deleted locations for pets: " + pets.petsIds(), HttpStatus.NO_CONTENT);
   }
+
+  @GetMapping("/storeLocation/{petId}")
+  public ResponseEntity<Location> getLocationsByPetId(
+      @PathVariable("petId") Long petId,
+      HttpServletResponse response,
+      @RequestHeader(value = "token", required = false) String token) {
+
+    log.info("Getting location for pet: {}", petId);
+    response.addHeader("Access-Control-Allow-Methods", "GET");
+    response.addHeader("Access-Control-Allow-Origin", domain);
+
+    validateToken(token);
+    var location = locationRepository.findByPetId(petId);
+    return location == null
+        ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
+        : new ResponseEntity<>(location, HttpStatus.OK);
+  }
 }
