@@ -8,15 +8,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    private final RequestInterceptor myRequestInterceptor;
+  private final RequestInterceptor myRequestInterceptor;
 
-    @Autowired
-    public WebConfig(RequestInterceptor myRequestInterceptor) {
-        this.myRequestInterceptor = myRequestInterceptor;
-    }
+  @Autowired
+  public WebConfig(RequestInterceptor myRequestInterceptor) {
+    this.myRequestInterceptor = myRequestInterceptor;
+  }
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(myRequestInterceptor).addPathPatterns("/geolocation/**"); // Apply to paths starting with /api/
-    }
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry
+        .addInterceptor(myRequestInterceptor)
+        .addPathPatterns("/geolocation/**"); // Apply to paths starting with /api/
+  }
 }
