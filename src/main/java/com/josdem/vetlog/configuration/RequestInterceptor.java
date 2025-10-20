@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.BufferedReader;
+
 @Slf4j
 @Component
 public class RequestInterceptor implements HandlerInterceptor {
@@ -14,7 +16,14 @@ public class RequestInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         log.info("Pre-handle: Request URL = {}", request.getRequestURL());
-        // Perform authentication, logging, etc.
+        StringBuilder stringBuilder = new StringBuilder();
+        try (BufferedReader reader = request.getReader()) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+        }
+        log.info("Request body: {}", stringBuilder);
         return true; // Continue processing the request
     }
 
