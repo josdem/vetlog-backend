@@ -147,3 +147,9 @@ tasks.withType<Test> {
 springBoot {
     buildInfo()
 }
+
+tasks.bootRun {
+    doFirst {
+        systemProperties = System.getProperties().mapKeys { it.key.toString() }
+    }
+}
